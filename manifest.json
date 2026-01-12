@@ -1,11 +1,11 @@
 {
     "name": "Warehouse Scanner",
     "short_name": "Scanner",
-    "description": "Mobile-friendly warehouse scanner for inventory management - Inspired by Orca Scan",
+    "description": "Modern warehouse scanner with clean minimal design for inventory management",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#F9FAFB",
-    "theme_color": "#0066FF",
+    "theme_color": "#4F46E5",
     "orientation": "portrait-primary",
     "icons": [
         {
