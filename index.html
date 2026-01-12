@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#0066FF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="description" content="Mobile-friendly warehouse scanner for inventory management">
+    <meta name="description" content="Mobile-friendly warehouse scanner inspired by Orca Scan">
 
     <title>Warehouse Scanner</title>
 
@@ -20,148 +20,500 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-content">
-                <h1 class="app-title">Warehouse Scanner</h1>
-                <button class="menu-btn" id="menuBtn" aria-label="Menu">
-                    <span class="menu-icon"></span>
+        <!-- Sidebar (Desktop) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="7" y1="12" x2="17" y2="12"></line>
+                    </svg>
+                    <span class="logo-text">Warehouse Scanner</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Scanner Section -->
-            <section class="scanner-section">
-                <div class="scanner-container">
-                    <div class="scanner-viewport" id="scannerViewport">
-                        <video id="scannerVideo" playsinline autoplay muted></video>
-                        <div class="scanner-overlay">
-                            <div class="scanner-frame"></div>
-                        </div>
-                        <div class="scanner-placeholder" id="scannerPlaceholder">
-                            <svg class="scanner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-                                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-                                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-                                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-                                <line x1="7" y1="12" x2="17" y2="12"></line>
+            <!-- Sheet Selector -->
+            <div class="sheet-selector">
+                <button class="sheet-dropdown" id="sheetDropdown">
+                    <span class="sheet-name" id="currentSheetName">Default Inventory</span>
+                    <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="sheet-menu" id="sheetMenu">
+                    <div class="sheet-menu-header">
+                        <span>Your Sheets</span>
+                        <button class="add-sheet-btn" id="addSheetBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            <p>Tap to start scanning</p>
-                        </div>
-                    </div>
-                    <div class="scanner-controls">
-                        <button class="btn btn-primary btn-large" id="scanBtn">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="7" y1="12" x2="17" y2="12"></line>
-                            </svg>
-                            Start Scanner
                         </button>
-                        <button class="btn btn-secondary" id="manualEntryBtn">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </div>
+                    <div class="sheet-list" id="sheetList">
+                        <!-- Sheets populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar-nav">
+                <button class="sidebar-nav-item active" data-view="scanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                        <line x1="7" y1="12" x2="17" y2="12"></line>
+                    </svg>
+                    <span>Scan</span>
+                </button>
+                <button class="sidebar-nav-item" data-view="inventory">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>Inventory</span>
+                    <span class="nav-badge" id="inventoryBadge">0</span>
+                </button>
+                <button class="sidebar-nav-item" data-view="history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>History</span>
+                </button>
+                <button class="sidebar-nav-item" data-view="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+
+            <!-- Export Section -->
+            <div class="sidebar-section">
+                <h3>Export Data</h3>
+                <div class="export-buttons">
+                    <button class="export-btn" data-format="csv">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        CSV
+                    </button>
+                    <button class="export-btn" data-format="json">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        JSON
+                    </button>
+                    <button class="export-btn" data-format="excel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <span class="version">v2.0.0</span>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay (Mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-content">
+                    <button class="menu-btn" id="menuBtn" aria-label="Menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="app-title" id="viewTitle">Scan</h1>
+                    <div class="header-actions">
+                        <button class="header-btn" id="searchToggle" aria-label="Search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
-                            Manual Entry
                         </button>
                     </div>
                 </div>
-            </section>
 
-            <!-- Manual Entry Modal -->
-            <div class="modal" id="manualEntryModal">
-                <div class="modal-backdrop"></div>
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>Manual Entry</h2>
-                        <button class="modal-close" id="closeManualEntry" aria-label="Close">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="barcodeInput">Barcode / SKU</label>
-                            <input type="text" id="barcodeInput" class="form-input" placeholder="Enter barcode or SKU" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <label for="quantityInput">Quantity</label>
-                            <div class="quantity-control">
-                                <button class="qty-btn" id="qtyDecrease">-</button>
-                                <input type="number" id="quantityInput" class="form-input qty-input" value="1" min="1">
-                                <button class="qty-btn" id="qtyIncrease">+</button>
+                <!-- Search Bar -->
+                <div class="search-bar" id="searchBar">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search items...">
+                    <button class="search-clear" id="searchClear" aria-label="Clear search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Scanner View -->
+                <section class="view-section active" id="scannerView">
+                    <div class="scanner-section">
+                        <div class="scanner-container">
+                            <div class="scanner-viewport" id="scannerViewport">
+                                <video id="scannerVideo" playsinline autoplay muted></video>
+                                <div class="scanner-overlay">
+                                    <div class="scanner-frame">
+                                        <div class="corner tl"></div>
+                                        <div class="corner tr"></div>
+                                        <div class="corner bl"></div>
+                                        <div class="corner br"></div>
+                                        <div class="scan-line"></div>
+                                    </div>
+                                </div>
+                                <div class="scanner-placeholder" id="scannerPlaceholder">
+                                    <svg class="scanner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                                        <line x1="7" y1="12" x2="17" y2="12"></line>
+                                    </svg>
+                                    <p>Tap to start scanning</p>
+                                </div>
+                            </div>
+
+                            <div class="scanner-controls">
+                                <button class="btn btn-primary btn-large" id="scanBtn">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                                        <line x1="7" y1="12" x2="17" y2="12"></line>
+                                    </svg>
+                                    Start Scanner
+                                </button>
+                                <button class="btn btn-secondary" id="manualEntryBtn">
+                                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    Add Manually
+                                </button>
+                            </div>
+
+                            <!-- Quick Settings -->
+                            <div class="quick-settings">
+                                <label class="toggle-setting">
+                                    <span>Continuous Scan</span>
+                                    <input type="checkbox" id="continuousScan">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <label class="toggle-setting">
+                                    <span>Sound</span>
+                                    <input type="checkbox" id="soundEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <label class="toggle-setting">
+                                    <span>Vibrate</span>
+                                    <input type="checkbox" id="vibrateEnabled" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" id="cancelManualEntry">Cancel</button>
-                        <button class="btn btn-primary" id="submitManualEntry">Add Item</button>
+
+                    <!-- Recent Scans Section -->
+                    <div class="scans-section">
+                        <div class="section-header">
+                            <h2>Recent Scans</h2>
+                            <div class="section-actions">
+                                <button class="btn btn-text" id="clearScansBtn">Clear All</button>
+                            </div>
+                        </div>
+                        <div class="scans-list" id="scansList">
+                            <div class="empty-state" id="emptyState">
+                                <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
+                                    <rect x="9" y="3" width="6" height="4" rx="1"></rect>
+                                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                                    <line x1="9" y1="16" x2="15" y2="16"></line>
+                                </svg>
+                                <p>No items scanned yet</p>
+                                <span>Scan a barcode or add manually to get started</span>
+                            </div>
+                        </div>
                     </div>
+                </section>
+
+                <!-- Inventory View -->
+                <section class="view-section" id="inventoryView">
+                    <div class="inventory-header">
+                        <div class="inventory-stats">
+                            <div class="stat-card">
+                                <span class="stat-value" id="totalItems">0</span>
+                                <span class="stat-label">Total Items</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="totalQuantity">0</span>
+                                <span class="stat-label">Total Quantity</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-value" id="todayScans">0</span>
+                                <span class="stat-label">Scanned Today</span>
+                            </div>
+                        </div>
+
+                        <div class="inventory-filters">
+                            <select class="filter-select" id="sortBy">
+                                <option value="recent">Most Recent</option>
+                                <option value="name">Name (A-Z)</option>
+                                <option value="quantity">Quantity</option>
+                            </select>
+                            <button class="filter-btn" id="filterBtn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                </svg>
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="inventory-list" id="inventoryList">
+                        <!-- Items populated by JS -->
+                    </div>
+                </section>
+
+                <!-- History View -->
+                <section class="view-section" id="historyView">
+                    <div class="history-timeline" id="historyTimeline">
+                        <!-- History items populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Settings View -->
+                <section class="view-section" id="settingsView">
+                    <div class="settings-content">
+                        <div class="settings-group">
+                            <h3>Scanner Settings</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Camera</span>
+                                    <span class="setting-desc">Select camera for scanning</span>
+                                </div>
+                                <select class="setting-select" id="cameraSelect">
+                                    <option value="environment">Back Camera</option>
+                                    <option value="user">Front Camera</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Auto-save after scan</span>
+                                    <span class="setting-desc">Automatically save scanned items</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="autoSave" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Flash</span>
+                                    <span class="setting-desc">Use flash when scanning</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="flashEnabled">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3>Appearance</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Theme</span>
+                                    <span class="setting-desc">Choose app theme</span>
+                                </div>
+                                <select class="setting-select" id="themeSelect">
+                                    <option value="auto">System</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3>Data Management</h3>
+                            <div class="setting-item clickable" id="exportAllData">
+                                <div class="setting-info">
+                                    <span class="setting-label">Export All Data</span>
+                                    <span class="setting-desc">Download all inventory data</span>
+                                </div>
+                                <svg class="setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </div>
+                            <div class="setting-item clickable danger" id="clearAllData">
+                                <div class="setting-info">
+                                    <span class="setting-label">Clear All Data</span>
+                                    <span class="setting-desc">Delete all stored data</span>
+                                </div>
+                                <svg class="setting-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="settings-group">
+                            <h3>About</h3>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <span class="setting-label">Version</span>
+                                </div>
+                                <span class="setting-value">2.0.0</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Navigation (Mobile) -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-view="scanner">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                        <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                        <line x1="7" y1="12" x2="17" y2="12"></line>
+                    </svg>
+                    <span>Scan</span>
+                </button>
+                <button class="nav-item" data-view="inventory">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>Inventory</span>
+                </button>
+                <button class="nav-item" data-view="history">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>History</span>
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Manual Entry Modal -->
+        <div class="modal" id="manualEntryModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add Item</h2>
+                    <button class="modal-close" id="closeManualEntry" aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="barcodeInput">Barcode / SKU *</label>
+                        <input type="text" id="barcodeInput" class="form-input" placeholder="Enter barcode or SKU" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" id="itemName" class="form-input" placeholder="Optional item name">
+                    </div>
+                    <div class="form-group">
+                        <label for="quantityInput">Quantity</label>
+                        <div class="quantity-control">
+                            <button class="qty-btn" id="qtyDecrease">-</button>
+                            <input type="number" id="quantityInput" class="form-input qty-input" value="1" min="1">
+                            <button class="qty-btn" id="qtyIncrease">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemNotes">Notes</label>
+                        <textarea id="itemNotes" class="form-input form-textarea" placeholder="Optional notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelManualEntry">Cancel</button>
+                    <button class="btn btn-primary" id="submitManualEntry">Add Item</button>
                 </div>
             </div>
+        </div>
 
-            <!-- Recent Scans Section -->
-            <section class="scans-section">
-                <div class="section-header">
-                    <h2>Recent Scans</h2>
-                    <button class="btn btn-text" id="clearScansBtn">Clear All</button>
-                </div>
-                <div class="scans-list" id="scansList">
-                    <div class="empty-state" id="emptyState">
-                        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
-                            <rect x="9" y="3" width="6" height="4" rx="1"></rect>
-                            <line x1="9" y1="12" x2="15" y2="12"></line>
-                            <line x1="9" y1="16" x2="15" y2="16"></line>
+        <!-- Item Detail Modal -->
+        <div class="modal" id="itemDetailModal">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h2>Item Details</h2>
+                    <button class="modal-close" id="closeItemDetail" aria-label="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
-                        <p>No items scanned yet</p>
-                        <span>Scan a barcode or enter manually to get started</span>
-                    </div>
+                    </button>
                 </div>
-            </section>
-        </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-view="scanner">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="7" y1="12" x2="17" y2="12"></line>
-                </svg>
-                <span>Scan</span>
-            </button>
-            <button class="nav-item" data-view="inventory">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <span>Inventory</span>
-            </button>
-            <button class="nav-item" data-view="history">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-                <span>History</span>
-            </button>
-            <button class="nav-item" data-view="settings">
-                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
-                <span>Settings</span>
-            </button>
-        </nav>
+                <div class="modal-body" id="itemDetailContent">
+                    <!-- Content populated by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" id="deleteItemBtn">Delete</button>
+                    <button class="btn btn-primary" id="saveItemBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Toast Notification -->
         <div class="toast" id="toast">
+            <div class="toast-icon"></div>
             <span class="toast-message"></span>
         </div>
+
+        <!-- Floating Action Button (Mobile) -->
+        <button class="fab" id="fabBtn" aria-label="Quick add">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
     </div>
 
     <script src="js/app.js"></script>
